@@ -12,12 +12,6 @@ keys = {
                 'extra_params':{
                           }
                     },
-        'anxpro':{
-                'public':'',
-                'private':'',
-                'extra_params':{
-                          }
-                    },
         'bibox':{
                 'public':'',
                 'private':'',
