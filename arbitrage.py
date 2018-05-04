@@ -20,8 +20,8 @@ import profitability_calculator as pc
 
 class Exchange:
     
-    BASE_CURRENCY = exchangeDict['baseCurrency'] # "BUY" CURRENCY
-    QUOTE_CURRENCY = exchangeDict['quoteCurrency']
+    BASE_CURRENCY = coins['baseCurrency'] # "BUY" CURRENCY
+    QUOTE_CURRENCY = coins['quoteCurrency']
     SYMBOL = BASE_CURRENCY + '/' + QUOTE_CURRENCY
     
     
@@ -387,11 +387,24 @@ def trial_arbitrage(BuyExchange,SellExchange,minProfitEuro):
 			
 #========================================================================================================
 
-
+coins = {
+		'baseCurrency' : '_________',					#FILL IN BASE CURRENCY
+		'quoteCurrency' : '_________'					#FILL IN QUOTE CURRENCY
+		}
 
 exchanges = {
-			'BUY':{},
-			'SELL':{}
+			'BUY':{
+					'exchangeName' : '_________',		#FILL IN BUY_EXCHANGE NAME
+					'publicKey' : '_________',			#FILL IN BUY_EXCHANGE PUBLIC API KEY
+					'privateKey' : '_________',			#FILL IN BUY_EXCHANGE PRIVATE API KEY
+					'withdrawalAddress' : '_________'	#FILL IN THE *SELL_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
+					},
+			'SELL':{
+					'exchangeName' : '_________', 		#FILL IN SELL_EXCHANGE NAME
+					'publicKey' : '_________', 			#FILL IN SELL_EXCHANGE PUBLIC API KEY
+					'privateKey' : '_________',			#FILL IN SELL_EXCHANGE PRIVATE API KEY
+					'withdrawalAddress' : '_________' 	#FILL IN THE *BUY_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
+					}
 			}
 			
 minProfitEuro = 10
