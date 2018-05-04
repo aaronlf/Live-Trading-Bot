@@ -22,19 +22,19 @@ import profitability_calculator as pc
 #- - - - - - - - - - - - - - - - - - - - USER INPUT GOES HERE - - - - - - - - - - - - - - - - - - - - - -
 
 coins = {
-    'baseCurrency' : '_________',             #FILL IN BASE CURRENCY
-    'quoteCurrency' : '_________'             #FILL IN QUOTE CURRENCY
+    'baseCurrency' : '_________',             #FILL IN BASE CURRENCY (IN LETTERS, CAPS)
+    'quoteCurrency' : '_________'             #FILL IN QUOTE CURRENCY (IN LETTERS, CAPS)
         }
 
 exchanges = {
         'BUY':{
-            'exchangeName' : '_________',     #FILL IN BUY_EXCHANGE NAME
+            'exchangeName' : '_________',     #FILL IN BUY_EXCHANGE NAME (lowercase)
             'publicKey' : '_________',        #FILL IN BUY_EXCHANGE PUBLIC API KEY
             'privateKey' : '_________',       #FILL IN BUY_EXCHANGE PRIVATE API KEY
             'withdrawalAddress' : '_________' #FILL IN THE *SELL_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
                 },
         'SELL':{
-            'exchangeName' : '_________',     #FILL IN SELL_EXCHANGE NAME
+            'exchangeName' : '_________',     #FILL IN SELL_EXCHANGE NAME (lowercase)
             'publicKey' : '_________',        #FILL IN SELL_EXCHANGE PUBLIC API KEY
             'privateKey' : '_________',       #FILL IN SELL_EXCHANGE PRIVATE API KEY
             'withdrawalAddress' : '_________' #FILL IN THE *BUY_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
