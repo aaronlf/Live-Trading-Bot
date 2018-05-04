@@ -424,8 +424,16 @@ def trial_arbitrage(BuyExchange,SellExchange,minProfitEuro):
             
 if __name__ == '__main__':
     
-    BuyExchange = Exchange(exchangeDict=exchanges['BUY'],exchangeType='BUY')
-    SellExchange = Exchange(exchangeDict=exchanges['SELL'],exchangeType='SELL')
+    BuyExchange = Exchange(
+            exchangeDict=exchanges['BUY'],
+            exchangeType='BUY',
+            trial=True
+            )
+    SellExchange = Exchange(
+            exchangeDict=exchanges['SELL'],
+            exchangeType='SELL',
+            trial=True
+            )
     BothExchanges = BothExchanges()
     
     if trial == True:
