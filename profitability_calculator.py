@@ -9,6 +9,7 @@ import pandas as pd
 import ccxt
 import ccxt2
 import numpy as np
+import time
 
 
 #------------------------------------------------------------------------------
@@ -79,8 +80,8 @@ def profitabilityCalculator(BuyExchange,SellExchange):
     ccxtObject_buyExchange = BuyExchange.ccxtObject
     ccxtObject_sellExchange = SellExchange.ccxtObject
     
-    base =  BuyExchange.BASE
-    quote = BuyExchange.QUOTE
+    base =  BuyExchange.BASE_CURRENCY
+    quote = BuyExchange.QUOTE_CURRENCY
     tx_fee_buyExchange = ccxtObject_buyExchange.fees['trading']['taker']
     tx_fee_sellExchange = ccxtObject_sellExchange.fees['trading']['taker']
     ccxt2_buyExchange = getattr(ccxt2,BuyExchange.NAME)()

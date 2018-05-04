@@ -83,7 +83,7 @@ class Exchange:
             self.availableBalanceBASE = 10 # 10 BASE coins
             self.availableBalanceQUOTE = 0.25 # 0.25 QUOTE coins, e.g. BTC
             
-        self.orders = self.getOrderbook()
+        self.orderbook = self.getOrderbook()
         self.profitStats = {}
         
         
@@ -156,7 +156,7 @@ class Exchange:
                 'price':round(weighted_price,precision['price']),
                 'volume':round(volume,precision['amount'])
                 }
-        self.orders = orderbook_dict
+        self.orderbook = orderbook_dict
         return orderbook_dict
     
     
@@ -358,8 +358,8 @@ def moveFunds(BuyExchange,SellExchange,BothExchanges):
   
 def arbitrage(BuyExchange,SellExchange,BothExchanges,minProfitEuro):
 
-    BuyExchangeOrderbookThread = threading.Thread(target=BuyExchange.getOrderbooksContinuously,daemon=True)
-    SellExchangeOrderbookThread = threading.Thread(target=SellExchange.getOrderbooksContinuously,daemon=True)
+    BuyExchangeOrderbookThread = threading.Thread(target=BuyExchange.getOrderbookContinuously,daemon=True)
+    SellExchangeOrderbookThread = threading.Thread(target=SellExchange.getOrderbookContinuously,daemon=True)
     BuyExchangeOrderbookThread.start()
     SellExchangeOrderbookThread.start()
     time.sleep(3)
@@ -388,8 +388,8 @@ def arbitrage(BuyExchange,SellExchange,BothExchanges,minProfitEuro):
 
 def trial_arbitrage(BuyExchange,SellExchange,minProfitEuro):
 
-    BuyExchangeOrderbookThread = threading.Thread(target=BuyExchange.getOrderbooksContinuously,daemon=True)
-    SellExchangeOrderbookThread = threading.Thread(target=SellExchange.getOrderbooksContinuously,daemon=True)
+    BuyExchangeOrderbookThread = threading.Thread(target=BuyExchange.getOrderbookContinuously,daemon=True)
+    SellExchangeOrderbookThread = threading.Thread(target=SellExchange.getOrderbookContinuously,daemon=True)
     BuyExchangeOrderbookThread.start()
     SellExchangeOrderbookThread.start()
     time.sleep(3)
