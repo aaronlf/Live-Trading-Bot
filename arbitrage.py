@@ -388,23 +388,23 @@ def trial_arbitrage(BuyExchange,SellExchange,minProfitEuro):
 #========================================================================================================
 
 coins = {
-		'baseCurrency' : '_________',					#FILL IN BASE CURRENCY
-		'quoteCurrency' : '_________'					#FILL IN QUOTE CURRENCY
+	'baseCurrency' : '_________',					#FILL IN BASE CURRENCY
+	'quoteCurrency' : '_________'					#FILL IN QUOTE CURRENCY
 		}
 
 exchanges = {
-			'BUY':{
-					'exchangeName' : '_________',		#FILL IN BUY_EXCHANGE NAME
-					'publicKey' : '_________',			#FILL IN BUY_EXCHANGE PUBLIC API KEY
-					'privateKey' : '_________',			#FILL IN BUY_EXCHANGE PRIVATE API KEY
-					'withdrawalAddress' : '_________'	#FILL IN THE *SELL_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
-					},
-			'SELL':{
-					'exchangeName' : '_________', 		#FILL IN SELL_EXCHANGE NAME
-					'publicKey' : '_________', 			#FILL IN SELL_EXCHANGE PUBLIC API KEY
-					'privateKey' : '_________',			#FILL IN SELL_EXCHANGE PRIVATE API KEY
-					'withdrawalAddress' : '_________' 	#FILL IN THE *BUY_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
-					}
+		'BUY':{
+			'exchangeName' : '_________',		#FILL IN BUY_EXCHANGE NAME
+			'publicKey' : '_________',			#FILL IN BUY_EXCHANGE PUBLIC API KEY
+			'privateKey' : '_________',			#FILL IN BUY_EXCHANGE PRIVATE API KEY
+			'withdrawalAddress' : '_________'	#FILL IN THE *SELL_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
+				},
+		'SELL':{
+			'exchangeName' : '_________', 		#FILL IN SELL_EXCHANGE NAME
+			'publicKey' : '_________', 			#FILL IN SELL_EXCHANGE PUBLIC API KEY
+			'privateKey' : '_________',			#FILL IN SELL_EXCHANGE PRIVATE API KEY
+			'withdrawalAddress' : '_________' 	#FILL IN THE *BUY_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
+				}
 			}
 			
 minProfitEuro = 10
