@@ -18,6 +18,40 @@ import profitability_calculator as pc
 #========================================================================================================
 
 
+
+#- - - - - - - - - - - - - - - - - - - - USER INPUT GOES HERE - - - - - - - - - - - - - - - - - - - - - -
+
+coins = {
+    'baseCurrency' : '_________',             #FILL IN BASE CURRENCY
+    'quoteCurrency' : '_________'             #FILL IN QUOTE CURRENCY
+        }
+
+exchanges = {
+        'BUY':{
+            'exchangeName' : '_________',     #FILL IN BUY_EXCHANGE NAME
+            'publicKey' : '_________',        #FILL IN BUY_EXCHANGE PUBLIC API KEY
+            'privateKey' : '_________',       #FILL IN BUY_EXCHANGE PRIVATE API KEY
+            'withdrawalAddress' : '_________' #FILL IN THE *SELL_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
+                },
+        'SELL':{
+            'exchangeName' : '_________',     #FILL IN SELL_EXCHANGE NAME
+            'publicKey' : '_________',        #FILL IN SELL_EXCHANGE PUBLIC API KEY
+            'privateKey' : '_________',       #FILL IN SELL_EXCHANGE PRIVATE API KEY
+            'withdrawalAddress' : '_________' #FILL IN THE *BUY_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
+                }
+            }
+               
+minProfitEuro = 10
+trial = True
+
+#- - - - - - - - - - - - - - - - - - - - END OF USER INPUT - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+#========================================================================================================
+
+
+
 class Exchange:
     
     BASE_CURRENCY = coins['baseCurrency'] # "BUY" CURRENCY
@@ -242,8 +276,6 @@ class Exchange:
         else:
             BothExchangesInstance.balanceDifferenceBASE_SELL_EXCHANGE = balanceDifferences['balanceDifferenceBASE'][0]
             BothExchangesInstance.balanceDifferenceQUOTE_SELL_EXCHANGE = balanceDifferences['balanceAfterQUOTE'][0]
-                
-    #--------------------------------
 
         
         
@@ -272,10 +304,10 @@ class BothExchanges:
         return self.profitGainedQUOTE    
         
         
-        
     
 #========================================================================================================    
         
+      
         
 def buyAndSell(BuyExchange,SellExchange):
     buyThread = threading.Thread(target=BuyExchange.trade(),daemon=True)
@@ -383,32 +415,11 @@ def trial_arbitrage(BuyExchange,SellExchange,minProfitEuro):
         else:
             time.sleep(0.5)
 
+
             
             
 #========================================================================================================
 
-coins = {
-    'baseCurrency' : '_________',             #FILL IN BASE CURRENCY
-    'quoteCurrency' : '_________'             #FILL IN QUOTE CURRENCY
-        }
-
-exchanges = {
-        'BUY':{
-            'exchangeName' : '_________',     #FILL IN BUY_EXCHANGE NAME
-            'publicKey' : '_________',        #FILL IN BUY_EXCHANGE PUBLIC API KEY
-            'privateKey' : '_________',       #FILL IN BUY_EXCHANGE PRIVATE API KEY
-            'withdrawalAddress' : '_________' #FILL IN THE *SELL_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
-                },
-        'SELL':{
-            'exchangeName' : '_________',     #FILL IN SELL_EXCHANGE NAME
-            'publicKey' : '_________',        #FILL IN SELL_EXCHANGE PUBLIC API KEY
-            'privateKey' : '_________',       #FILL IN SELL_EXCHANGE PRIVATE API KEY
-            'withdrawalAddress' : '_________' #FILL IN THE *BUY_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
-                }
-            }
-            
-minProfitEuro = 10
-trial = True
 
             
 if __name__ == '__main__':
@@ -421,4 +432,3 @@ if __name__ == '__main__':
         trial_arbitrage(BuyExchange,SellExchange,minProfitEuro)
     else:
         arbitrage(BuyExchange,SellExchange,BothExchanges,minProfitEuro)
-
