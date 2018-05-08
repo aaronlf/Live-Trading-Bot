@@ -50,6 +50,7 @@ def load_euro_and_BTC_values():
     BTC_values['USDT'] = round(1 / float(exchanges['bittrex'].fetchTicker('BTC/USDT')['last']),8)
     BTC_values['ETH'] = float(exchanges['bitstamp'].fetchTicker('ETH/BTC')['last'])
     BTC_values['LTC'] = float(exchanges['bittrex'].fetchTicker('LTC/BTC')['last'])
+	
 
 
 def convert_to_euro(initial_quote_paid,quote):    
@@ -102,8 +103,7 @@ def profitabilityCalculator(BuyExchange,SellExchange):
     # NEW
     if maxVolume > SellExchange.availableBalanceBASE:
         maxVolume = SellExchange.availableBalanceBASE
-        
-    
+           
     ask_buyExchange = orderbook_buyExchange['price']
     bid_sellExchange = orderbook_sellExchange['price']
     
@@ -113,35 +113,24 @@ def profitabilityCalculator(BuyExchange,SellExchange):
     if initial_quote_paid > BuyExchange.availableBalanceQUOTE:
         initial_quote_paid = BuyExchange.availableBalanceQUOTE
         maxVolume = initial_quote_paid / ask_buyExchange
-    
-    
+     
     initial_base_received = maxVolume * (1 - tx_fee_buyExchange)
-    initial_quote_received = (  (maxVolume * bid_sellExchange) 
-                              * (1 - tx_fee_sellExchange) )
+    initial_quote_received = ( (maxVolume * bid_sellExchange) 
+                             * (1 - tx_fee_sellExchange) )
     if wd_fee_buyExchange:
         initial_base_after_withdrawal = initial_base_received - wd_fee_buyExchange         
-        quote_gained_after_withdrawal = ( initial_base_after_withdrawal 
-                                        * bid_sellExchange 
-                                        * (1 - tx_fee_sellExchange) )
-    else:
-        quote_gained_after_withdrawal = 0
-    quote_gained = ( initial_base_received 
-                    * bid_sellExchange 
-                    * (1 - tx_fee_buyExchange) )
-    
     if wd_fee_sellExchange:
-        quote_left_over_after_second_withdrawal = ( quote_gained_after_withdrawal 
-                                                   - wd_fee_sellExchange )
-    grossProfit = quote_gained - initial_quote_paid
-    percentGrossProfit = round(((grossProfit / initial_quote_paid) - 1),3)
-    grossProfitEuro = convert_to_euro(grossProfit,quote)
-    grossProfitBTC = convert_to_BTC(grossProfit,quote)
+        quote_left_over_after_withdrawal = ( initial_quote_received - wd_fee_sellExchange )
+												   
+    profitBASE = initial_base_after_withdrawal - maxVolume
+    profitBASE_convertedQUOTE = profitBASE * bid_sellExchange * (1 - tx_fee_sellExchange)
+    profitQUOTE = quote_left_over_after_withdrawal - initial_quote_paid
+    netProfitQUOTE = profitBASE_convertedQUOTE + profitQUOTE
     
     if wd_fee_buyExchange and wd_fee_sellExchange:
-        netProfit = quote_left_over_after_second_withdrawal - initial_quote_paid
-        percentNetProfit = round(((netProfit / initial_quote_paid) - 1),3)
-        netProfitEuro = convert_to_euro(netProfit,quote)
-        netProfitBTC = convert_to_BTC(netProfit,quote)
+        percentNetProfit = round(((netProfitQUOTE / initial_quote_paid) - 1),3)
+        netProfitEuro = convert_to_euro(netProfitQUOTE,quote)
+        netProfitBTC = convert_to_BTC(netProfitQUOTE,quote)
     else:
         netProfit = np.nan
         percentNetProfit = np.nan
@@ -154,9 +143,6 @@ def profitabilityCalculator(BuyExchange,SellExchange):
     df_result = pd.DataFrame({
             'maxInitialAmountEuro':[maxInitialAmountEuro],
             'maxInitialAmountBTC':[maxInitialAmountBTC],
-            'grossProfitEuro':[grossProfitEuro],
-            'grossProfitBTC':[grossProfitBTC],
-            'percentGrossProfit':[percentGrossProfit],
             'netProfitEuro':[netProfitEuro],
             'netProfitBTC':[netProfitBTC],
             'percentNetProfit':[percentNetProfit],
@@ -167,7 +153,7 @@ def profitabilityCalculator(BuyExchange,SellExchange):
             'initial_quote_received':[initial_quote_received],
 			'timestamp':time.time()
             })
-    
+    print(netProfitEuro)
     return df_result
 
 
