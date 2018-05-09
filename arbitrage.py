@@ -22,26 +22,26 @@ import profitability_calculator as pc
 #- - - - - - - - - - - - - - - - - - - - USER INPUT GOES HERE - - - - - - - - - - - - - - - - - - - - - -
 
 coins = {
-    'baseCurrency' : '_________',             #FILL IN BASE CURRENCY (IN LETTERS, CAPS)
-    'quoteCurrency' : '_________'             #FILL IN QUOTE CURRENCY (IN LETTERS, CAPS)
+    'baseCurrency' : 'XMR' ,             #FILL IN BASE CURRENCY (IN LETTERS, CAPS)
+    'quoteCurrency' : 'BTC'             #FILL IN QUOTE CURRENCY (IN LETTERS, CAPS)
         }
 
 exchanges = {
         'BUY':{
-            'exchangeName' : '_________',     #FILL IN BUY_EXCHANGE NAME (lowercase)
-            'publicKey' : '_________',        #FILL IN BUY_EXCHANGE PUBLIC API KEY
-            'privateKey' : '_________',       #FILL IN BUY_EXCHANGE PRIVATE API KEY
+            'exchangeName' : 'gateio' ,     #FILL IN BUY_EXCHANGE NAME (lowercase)
+            'publicKey' : '_________' ,        #FILL IN BUY_EXCHANGE PUBLIC API KEY
+            'privateKey' : '_________' ,       #FILL IN BUY_EXCHANGE PRIVATE API KEY
             'withdrawalAddress' : '_________' #FILL IN THE *SELL_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
                 },
         'SELL':{
-            'exchangeName' : '_________',     #FILL IN SELL_EXCHANGE NAME (lowercase)
-            'publicKey' : '_________',        #FILL IN SELL_EXCHANGE PUBLIC API KEY
-            'privateKey' : '_________',       #FILL IN SELL_EXCHANGE PRIVATE API KEY
+            'exchangeName' : 'bittrex' ,     #FILL IN SELL_EXCHANGE NAME (lowercase)
+            'publicKey' : '_________' ,        #FILL IN SELL_EXCHANGE PUBLIC API KEY
+            'privateKey' : '_________' ,       #FILL IN SELL_EXCHANGE PRIVATE API KEY
             'withdrawalAddress' : '_________' #FILL IN THE *BUY_EXCHANGE* DEPOSIT ADDRESS FOR THE BASE CURRENCY
                 }
             }
                
-minProfitEuro = 10
+minProfitEuro = 5
 trial = True
 
 #- - - - - - - - - - - - - - - - - - - - END OF USER INPUT - - - - - - - - - - - - - - - - - - - - - - -
@@ -80,8 +80,10 @@ class Exchange:
             self.availableBalanceBASE = balances['free'][Exchange.BASE_CURRENCY]
             self.availableBalanceQUOTE = balances['free'][Exchange.QUOTE_CURRENCY]
         else:
-            self.availableBalanceBASE = 10 # 10 BASE coins
-            self.availableBalanceQUOTE = 0.25 # 0.25 QUOTE coins, e.g. BTC
+            if self.exchangeType == 'SELL':
+                self.availableBalanceBASE = 10 # 10 BASE coins
+            else:
+                self.availableBalanceQUOTE = 0.25 # 0.25 QUOTE coins, e.g. BTC
             
         self.orderbook = self.getOrderbook()
         self.profitStats = {}
@@ -161,9 +163,10 @@ class Exchange:
     
     
     def getOrderbookContinuously(self):
-        s = sched.scheduler()
-        s.enter((self.ccxtObject.rateLimit*1.5),0,self.getOrderbook)
-        s.run()
+        while True:
+            s = sched.scheduler()
+            s.enter((self.ccxtObject.rateLimit*1.5/1000),0,self.getOrderbook)
+            s.run()
     
     
     #--------------------------------
@@ -223,7 +226,7 @@ class Exchange:
                 if self.checkBalanceBASE() >= balanceBeforeBASE:
                     # The deposit has been completed successfully. Proceed.
                     break
-            time.sleep(1)
+            time.sleep(5)
         balanceDifferences = {
                         'balanceBeforeBASE':[balanceBeforeBASE],
                         'balanceBeforeQUOTE':[balanceBeforeQUOTE],
@@ -309,9 +312,9 @@ class BothExchanges:
         
       
         
-def buyAndSell(BuyExchange,SellExchange):
-    buyThread = threading.Thread(target=BuyExchange.trade(),daemon=True)
-    sellThread = threading.Thread(target=SellExchange.trade(),daemon=True)    
+def buyAndSell(buyExchange,sellExchange):
+    buyThread = threading.Thread(target=buyExchange.trade(),daemon=True)
+    sellThread = threading.Thread(target=sellExchange.trade(),daemon=True)    
     
     buyThread.start()
     sellThread.start()
@@ -320,9 +323,9 @@ def buyAndSell(BuyExchange,SellExchange):
 
 
     
-def moveFunds(BuyExchange,SellExchange,BothExchanges):
-    buyExchangeThread = threading.Thread(target=BuyExchange.withdrawAndConfirm,argument=(BothExchanges,),daemon=True)
-    sellExchangeThread = threading.Thread(target=SellExchange.withdrawAndConfirm,argument=(BothExchanges,),daemon=True)
+def moveFunds(buyExchange,sellExchange,bothExchanges):
+    buyExchangeThread = threading.Thread(target=buyExchange.withdrawAndConfirm,argument=(bothExchanges,),daemon=True)
+    sellExchangeThread = threading.Thread(target=sellExchange.withdrawAndConfirm,argument=(bothExchanges,),daemon=True)
     
     buyExchangeThread.start()
     sellExchangeThread.start()
@@ -333,14 +336,14 @@ def moveFunds(BuyExchange,SellExchange,BothExchanges):
     The following lines of code outputs the NET PROFIT MADE FROM BOTH EXCHANGES
     '''
     profits = {
-            'netProfitBASE':[BothExchanges.getProfitBASE()],
-            'netProfitQUOTE':[BothExchanges.getProfitQUOTE()],
+            'netProfitBASE':[bothExchanges.getProfitBASE()],
+            'netProfitQUOTE':[bothExchanges.getProfitQUOTE()],
             'time':[time.strftime("%d-%m-%Y %H:%M:%S")]
             }
     output_text_both = (
             'Net profits earned between both exchanges: \n'
-            + BuyExchange.BASE_CURRENCY + 'gained/lost = ' + profits['netProfitBASE'][0] + '\n'
-            + BuyExchange.QUOTE_CURRENCY + 'gained/lost = ' + profits['netProfitQUOTE'][0] + '\n'
+            + buyExchange.BASE_CURRENCY + 'gained/lost = ' + profits['netProfitBASE'][0] + '\n'
+            + buyExchange.QUOTE_CURRENCY + 'gained/lost = ' + profits['netProfitQUOTE'][0] + '\n'
             + 'Time: ' + profits['time'][0] + '\n\n\n'
             )
     with threading.Lock():
@@ -356,29 +359,29 @@ def moveFunds(BuyExchange,SellExchange,BothExchanges):
 
 
   
-def arbitrage(BuyExchange,SellExchange,BothExchanges,minProfitEuro):
+def arbitrage(buyExchange,sellExchange,bothExchanges,minProfitEuro):
 
-    BuyExchangeOrderbookThread = threading.Thread(target=BuyExchange.getOrderbookContinuously,daemon=True)
-    SellExchangeOrderbookThread = threading.Thread(target=SellExchange.getOrderbookContinuously,daemon=True)
-    BuyExchangeOrderbookThread.start()
-    SellExchangeOrderbookThread.start()
+    buyExchangeOrderbookThread = threading.Thread(target=buyExchange.getOrderbookContinuously,daemon=True)
+    sellExchangeOrderbookThread = threading.Thread(target=sellExchange.getOrderbookContinuously,daemon=True)
+    buyExchangeOrderbookThread.start()
+    sellExchangeOrderbookThread.start()
     time.sleep(3)
     
     while True:
-        while BuyExchange.tradingPaused == False and SellExchange.tradingPaused == False: 
-            profitCalculations = pc.profitabilityCalculator(BuyExchange,SellExchange)
-            BuyExchange.profitStats = profitCalculations
-            SellExchange.profitstats = profitCalculations
+        while buyExchange.tradingPaused == False and sellExchange.tradingPaused == False: 
+            profitCalculations = pc.profitabilityCalculator(buyExchange,sellExchange)
+            buyExchange.profitStats = profitCalculations
+            sellExchange.profitstats = profitCalculations
             
             if profitCalculations['netProfitEuro'][0] > minProfitEuro:
-                BuyExchange.tradingPaused = True
-                SellExchange.tradingPaused = True
+                buyExchange.tradingPaused = True
+                sellExchange.tradingPaused = True
                 
-                buyAndSell(BuyExchange,SellExchange)
-                moveFunds(BuyExchange,SellExchange,BothExchanges)
+                buyAndSell(buyExchange,sellExchange)
+                moveFunds(buyExchange,sellExchange,bothExchanges)
                 
-                BuyExchange.tradingPaused = False
-                SellExchange.tradingPaused = False
+                buyExchange.tradingPaused = False
+                sellExchange.tradingPaused = False
                 
                 with open('predicted_profits.csv','a') as c:
                     profitCalculations.to_csv(c,header=False)
@@ -386,16 +389,16 @@ def arbitrage(BuyExchange,SellExchange,BothExchanges,minProfitEuro):
                 time.sleep(0.5)
         
 
-def trial_arbitrage(BuyExchange,SellExchange,minProfitEuro):
+def trial_arbitrage(buyExchange,sellExchange,minProfitEuro):
 
-    BuyExchangeOrderbookThread = threading.Thread(target=BuyExchange.getOrderbookContinuously,daemon=True)
-    SellExchangeOrderbookThread = threading.Thread(target=SellExchange.getOrderbookContinuously,daemon=True)
-    BuyExchangeOrderbookThread.start()
-    SellExchangeOrderbookThread.start()
+    buyExchangeOrderbookThread = threading.Thread(target=buyExchange.getOrderbookContinuously,daemon=True)
+    sellExchangeOrderbookThread = threading.Thread(target=sellExchange.getOrderbookContinuously,daemon=True)
+    buyExchangeOrderbookThread.start()
+    sellExchangeOrderbookThread.start()
     time.sleep(3)
 
     while True:
-        profitCalculations = pc.profitabilityCalculator(BuyExchange,SellExchange)        
+        profitCalculations = pc.profitabilityCalculator(buyExchange,sellExchange)        
         if profitCalculations['netProfitEuro'][0] > minProfitEuro:
             
             output_text = (
